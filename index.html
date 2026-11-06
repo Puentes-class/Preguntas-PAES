@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Interactivo - Repaso PAES Física</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .question-card {
+            display: none;
+        }
+        .question-card.active {
+            display: block;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .question-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .options li:hover {
+            background: #e9ecef;
+        }
+        .options li.selected {
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+        .options li.correct {
+            border-color: #2ecc71;
+            background: #eafaf1;
+        }
+        .options li.incorrect {
+            border-color: #e74c3c;
+            background: #ffd2d2;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+        }
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 Repaso Intensivo PAES Física</h1>
+    <div id="quiz-container">
+        
+        <!-- PREGUNTA 1 -->
+        <div class="question-card active" data-question="1">
+            <div class="question-text">1. Un estudiante prepara cuatro vasos transparentes con agua y azúcar... ¿Cuál es la hipótesis?</div>
+            
+            <!-- ESPACIO PARA AGREGAR IMAGEN -->
+            <div class="question-image">
+                <img src="ruta_de_tu_imagen_1.jpg" alt="Imagen Pregunta 1">
+            </div>
+
+            <ul class="options" data-correct="1">
+                <li data-index="0">A) A mayor concentración de azúcar, mayor intensidad reflejada.</li>
+                <li data-index="1">B) A mayor concentración de azúcar, más se acerca a la normal el haz refractado.</li>
+                <li data-index="2">C) A mayor longitud de onda, mayor intensidad reflejada.</li>
+                <li data-index="3">D) A mayor longitud de onda, más se acerca a la normal el haz refractado.</li>
+            </ul>
+            <button class="btn" onclick="checkAnswer(1)">Revisar Respuesta</button>
+            <div class="feedback" id="feedback-1"></div>
+        </div>
+
+        <!-- PREGUNTA 2 -->
+        <div class="question-card" data-question="2">
+            <div class="question-text">2. Los anteojos que corrigen la miopía tienen lentes divergentes... ¿Cuál esquema es correcto?</div>
+            
+            <!-- ESPACIO PARA AGREGAR IMAGEN -->
+            <div class="question-image">
+                <img src="ruta_de_tu_imagen_2.jpg" alt="Imagen Pregunta 2">
+            </div>
+
+            <ul class="options" data-correct="2">
+                <li data-index="0">A) Esquema A</li>
+                <li data-index="1">B) Esquema B</li>
+                <li data-index="2">C) Esquema C</li>
+                <li data-index="3">D) Esquema D</li>
+            </ul>
+            <button class="btn" onclick="checkAnswer(2)">Revisar Respuesta</button>
+            <div class="feedback" id="feedback-2"></div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="btn" id="prev-btn" onclick="changeQuestion(-1)" style="display:none;">Anterior</button>
+        <button class="btn" id="next-btn" onclick="changeQuestion(1)">Siguiente</button>
+    </div>
+</div>
+
+<script>
+    let currentQuestion = 1;
+    const totalQuestions = 2; // Actualiza este número si agregas más preguntas
+
+    // Selección de opciones
+    document.querySelectorAll('.options li').forEach(item => {
+        item.addEventListener('click', function() {
+            const parent = this.parentElement;
+            parent.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    function checkAnswer(qNum) {
+        const card = document.querySelector(`.question-card[data-question="${qNum}"]`);
+        const selected = card.querySelector('.options li.selected');
+        const feedback = document.getElementById(`feedback-${qNum}`);
+        const correctIndex = parseInt(card.querySelector('.options').getAttribute('data-correct'));
+
+        if (!selected) {
+            alert('Por favor, selecciona una alternativa.');
+            return;
+        }
+
+        const selectedIndex = parseInt(selected.getAttribute('data-index'));
+        
+        feedback.style.display = 'block';
+        if (selectedIndex === correctIndex) {
+            selected.classList.add('correct');
+            feedback.className = 'feedback success';
+            feedback.innerHTML = '¡Correcto! 🎉 Excelente análisis físico.';
+        } else {
+            selected.classList.add('incorrect');
+            card.querySelector(`.options li[data-index="${correctIndex}"]`).classList.add('correct');
+            feedback.className = 'feedback error';
+            feedback.innerHTML = 'Incorrecto. La alternativa marcada en verde era la correcta.';
+        }
+    }
+
+    function changeQuestion(direction) {
+        document.querySelector(`.question-card[data-question="${currentQuestion}"]`).classList.remove('active');
+        currentQuestion += direction;
+        document.querySelector(`.question-card[data-question="${currentQuestion}"]`).classList.add('active');
+
+        document.getElementById('prev-btn').style.display = currentQuestion > 1 ? 'inline-block' : 'none';
+        document.getElementById('next-btn').style.display = currentQuestion < totalQuestions ? 'inline-block' : 'none';
+    }
+</script>
+
+</body>
+</html>
